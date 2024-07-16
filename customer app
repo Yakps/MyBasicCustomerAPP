@@ -1,0 +1,122 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QTextEdit, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt5.QtCore import Qt
+
+class Customer:
+    def __init__(self, name, phone, email, car_make, car_model, repair_description):
+        self.name = name
+        self.phone = phone
+        self.email = email
+        self.car_make = car_make
+        self.car_model = car_model
+        self.repair_description = repair_description
+
+class CustomerDatabase:
+    def __init__(self):
+        self.customers = []
+
+    def add_customer(self, customer):
+        self.customers.append(customer)
+
+    def get_customers(self):
+        return self.customers
+
+class CustomerDataGUI(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Customer Data Storage")
+        self.setGeometry(300, 300, 400, 300)
+
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.nameLabel = QLabel("Name:")
+        self.layout.addWidget(self.nameLabel)
+
+        self.nameEdit = QLineEdit()
+        self.layout.addWidget(self.nameEdit)
+
+        self.phoneLabel = QLabel("Phone:")
+        self.layout.addWidget(self.phoneLabel)
+
+        self.phoneEdit = QLineEdit()
+        self.layout.addWidget(self.phoneEdit)
+
+        self.emailLabel = QLabel("Email:")
+        self.layout.addWidget(self.emailLabel)
+
+        self.emailEdit = QLineEdit()
+        self.layout.addWidget(self.emailEdit)
+
+        self.carMakeLabel = QLabel("Car Make:")
+        self.layout.addWidget(self.carMakeLabel)
+
+        self.carMakeEdit = QLineEdit()
+        self.layout.addWidget(self.carMakeEdit)
+
+        self.carModelLabel = QLabel("Car Model:")
+        self.layout.addWidget(self.carModelLabel)
+
+        self.carModelEdit = QLineEdit()
+        self.layout.addWidget(self.carModelEdit)
+
+        self.repairDescriptionLabel = QLabel("Repair Description:")
+        self.layout.addWidget(self.repairDescriptionLabel)
+
+        self.repairDescriptionEdit = QTextEdit()
+        self.layout.addWidget(self.repairDescriptionEdit)
+
+        self.addButton = QPushButton("Add Customer")
+        self.addButton.clicked.connect(self.addCustomer)
+        self.layout.addWidget(self.addButton)
+
+        self.customerTable = QTableWidget()
+        self.customerTable.setRowCount(0)
+        self.customerTable.setColumnCount(6)
+        self.customerTable.setHorizontalHeaderLabels(["Name", "Phone", "Email", "Car Make", "Car Model", "Repair Description"])
+        self.customerTable.horizontalHeader().setStretchLastSection(True)
+        self.customerTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.layout.addWidget(self.customerTable)
+
+        self.db = CustomerDatabase()
+
+    def addCustomer(self):
+        name = self.nameEdit.text()
+        phone = self.phoneEdit.text()
+        email = self.emailEdit.text()
+        car_make = self.carMakeEdit.text()
+        car_model = self.carModelEdit.text()
+        repair_description = self.repairDescriptionEdit.toPlainText()
+
+        customer = Customer(name, phone, email, car_make, car_model, repair_description)
+        self.db.add_customer(customer)
+
+        self.updateCustomerTable()
+
+        self.nameEdit.clear()
+        self.phoneEdit.clear()
+        self.emailEdit.clear()
+        self.carMakeEdit.clear()
+        self.carModelEdit.clear()
+        self.repairDescriptionEdit.clear()
+
+    def updateCustomerTable(self):
+        self.customerTable.setRowCount(0)
+        for row, customer in enumerate(self.db.get_customers()):
+            self.customerTable.insertRow(row)
+            self.customerTable.setItem(row, 0, QTableWidgetItem(customer.name))
+            self.customerTable.setItem(row, 1, QTableWidgetItem(customer.phone))
+            self.customerTable.setItem(row, 2, QTableWidgetItem(customer.email))
+            self.customerTable.setItem(row, 3, QTableWidgetItem(customer.car_make))
+            self.customerTable.setItem(row, 4, QTableWidgetItem(customer.car_model))
+            self.customerTable.setItem(row, 5, QTableWidgetItem(customer.repair_description))
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    gui = CustomerDataGUI()
+    gui.show()
+    sys.exit(app.exec_())
